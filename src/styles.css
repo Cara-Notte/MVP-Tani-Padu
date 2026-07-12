@@ -191,11 +191,37 @@ th {
 }
 
 .nav-link {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.7rem;
   width: 100%;
   border-radius: 8px;
   padding: 0.6rem 0.85rem;
   font-weight: 700;
   text-align: left;
+}
+
+.nav-icon {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  color: currentColor;
+}
+
+.nav-icon svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.nav-link-label {
+  min-width: 0;
 }
 
 .nav-link:hover,
@@ -1052,7 +1078,7 @@ th {
   position: sticky;
   top: 92px;
   grid-column: 2;
-  grid-row: 1 / span 2;
+  grid-row: 1 / span 3;
   padding: 1.2rem;
   background:
     radial-gradient(circle at 90% 10%, rgba(233, 150, 44, 0.18), transparent 34%),
@@ -1079,6 +1105,15 @@ th {
   border-color: var(--green-600);
   background: var(--green-100);
   box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.12);
+}
+
+.payment-method.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.payment-method.is-disabled input {
+  cursor: not-allowed;
 }
 
 .payment-method-icon {
@@ -1141,6 +1176,76 @@ th {
 .payment-code-card strong {
   font-size: clamp(1.25rem, 3vw, 1.8rem);
   letter-spacing: 0.08em;
+}
+
+.courier-insight {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.courier-insight div,
+.courier-load-list,
+.courier-rule {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--cream-50);
+}
+
+.courier-insight div {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.85rem;
+}
+
+.courier-insight span,
+.courier-load-list span,
+.courier-unit-note {
+  color: var(--muted);
+}
+
+.courier-insight strong {
+  color: var(--green-900);
+}
+
+.courier-rule {
+  margin: 0 0 0.75rem;
+  padding: 0.8rem;
+  color: var(--green-900);
+  font-weight: 800;
+}
+
+.courier-load-list {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 0.7rem;
+  padding: 0.85rem;
+}
+
+.courier-load-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.courier-load-list strong {
+  color: var(--green-900);
+  white-space: nowrap;
+}
+
+.courier-unit-note {
+  display: block;
+  margin-bottom: 0.9rem;
+}
+
+.courier-methods {
+  gap: 0.65rem;
+}
+
+.courier-method .payment-method-copy {
+  display: grid;
+  gap: 0.12rem;
 }
 
 .payment-items,
@@ -1425,6 +1530,8 @@ th {
 
 .producer-trend-card,
 .producer-chart-panel,
+.producer-forecast-panel,
+.producer-forecast-card,
 .producer-products-panel,
 .producer-product-row {
   border: 1px solid var(--line);
@@ -1527,6 +1634,176 @@ th {
   fill: var(--orange-500);
   stroke: var(--white);
   stroke-width: 3;
+}
+
+.producer-forecast-panel {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1.2rem;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(233, 150, 44, 0.14), transparent 34%),
+    var(--white);
+}
+
+.producer-forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.producer-forecast-card {
+  display: grid;
+  gap: 0.85rem;
+  overflow: hidden;
+  box-shadow: none;
+  padding: 1rem;
+  background: var(--cream-50);
+}
+
+.forecast-inflasi {
+  background:
+    radial-gradient(circle at 94% 10%, rgba(233, 150, 44, 0.18), transparent 32%),
+    var(--cream-50);
+}
+
+.forecast-deflasi {
+  background:
+    radial-gradient(circle at 94% 10%, rgba(47, 133, 90, 0.15), transparent 32%),
+    var(--cream-50);
+}
+
+.forecast-card-head,
+.forecast-status-row,
+.forecast-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.forecast-card-head h3 {
+  margin: 0 0 0.25rem;
+  color: var(--green-900);
+}
+
+.forecast-card-head small,
+.forecast-status-row span,
+.forecast-note {
+  color: var(--muted);
+}
+
+.forecast-card-head .trend-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+}
+
+.forecast-card-head .trend-icon svg {
+  width: 23px;
+  height: 23px;
+}
+
+.producer-forecast-chart {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.producer-forecast-chart svg {
+  width: 100%;
+  min-height: 104px;
+}
+
+.producer-forecast-chart .forecast-grid-line {
+  fill: none;
+  stroke: rgba(227, 221, 202, 0.82);
+  stroke-dasharray: 4 5;
+}
+
+.producer-forecast-chart polygon {
+  fill: rgba(47, 133, 90, 0.11);
+}
+
+.producer-forecast-chart polyline {
+  fill: none;
+  stroke: var(--green-700);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.producer-forecast-chart.forecast-inflasi polyline {
+  stroke: var(--yellow-600);
+}
+
+.producer-forecast-chart.forecast-deflasi polyline {
+  stroke: var(--green-700);
+}
+
+.producer-forecast-chart.forecast-stabil polyline {
+  stroke: var(--muted);
+}
+
+.producer-forecast-chart circle {
+  fill: var(--orange-500);
+  stroke: var(--white);
+  stroke-width: 3;
+}
+
+.forecast-chart-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.forecast-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.forecast-metrics div {
+  display: grid;
+  gap: 0.1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.76);
+  padding: 0.7rem;
+}
+
+.forecast-metrics span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.forecast-metrics strong {
+  color: var(--green-900);
+}
+
+.forecast-metrics small {
+  color: var(--green-700);
+  font-weight: 900;
+}
+
+.forecast-note {
+  margin: 0;
+}
+
+.forecast-actions {
+  flex-wrap: wrap;
+}
+
+.form-hint {
+  margin: 0.4rem 2.2rem 0 0;
+  border-radius: 8px;
+  background: var(--green-100);
+  color: var(--green-800);
+  padding: 0.65rem 0.75rem;
+  font-weight: 800;
 }
 
 .dashboard-layout {
@@ -2492,6 +2769,10 @@ th {
     grid-template-columns: 1fr;
   }
 
+  .producer-forecast-grid {
+    grid-template-columns: 1fr;
+  }
+
   .detail-image {
     min-height: 320px;
   }
@@ -2549,6 +2830,26 @@ th {
 
   .cart-item {
     grid-template-columns: 1fr;
+  }
+
+  .forecast-card-head,
+  .forecast-status-row,
+  .forecast-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .forecast-actions .btn {
+    width: 100%;
+  }
+
+  .courier-insight {
+    grid-template-columns: 1fr;
+  }
+
+  .courier-load-list div {
+    display: grid;
+    gap: 0.15rem;
   }
 
   .monitor-list-header {
@@ -2633,6 +2934,10 @@ th {
   }
 
   .producer-product-row {
+    grid-template-columns: 1fr;
+  }
+
+  .forecast-metrics {
     grid-template-columns: 1fr;
   }
 

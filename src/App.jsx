@@ -307,7 +307,7 @@ export default function App() {
     persistCart(cart.filter((item) => item.productId !== productId));
   };
 
-  const checkout = () => {
+  const checkout = (checkoutMetadata = {}) => {
     if (!currentUser) {
       return { ok: false, message: "Silakan masuk untuk melakukan checkout." };
     }
@@ -331,6 +331,7 @@ export default function App() {
       };
     }
 
+    const productTotal = cartItems.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
     const transaction = {
       id: `TPD-${Date.now()}`,
       customerEmail: currentUser.email,
@@ -346,7 +347,10 @@ export default function App() {
         unit: item.product.unit,
         price: item.product.price
       })),
-      total: cartItems.reduce((sum, item) => sum + item.quantity * item.product.price, 0)
+      productTotal,
+      delivery: checkoutMetadata.delivery || null,
+      payment: checkoutMetadata.payment || null,
+      total: checkoutMetadata.payment?.paidTotal || productTotal
     };
 
     const nextProducts = products.map((product) => {

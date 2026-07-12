@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatNumber, formatRupiah } from "../utils/formatters";
 
 const paymentMethods = [
@@ -21,6 +21,63 @@ const paymentMethods = [
     detail: "Dana, OVO, atau GoPay"
   }
 ];
+
+const unitWeightKg = {
+  kg: 1,
+  karung: 25,
+  ikat: 0.35,
+  buah: 0.25
+};
+
+const courierOptions = [
+  {
+    id: "motor",
+    title: "Kurir Motor",
+    capacityKg: 20,
+    fee: 10000,
+    description: "Cocok untuk belanja ringan, sayur ikat, buah, dan pesanan harian."
+  },
+  {
+    id: "motor-box",
+    title: "Motor Box Pangan",
+    capacityKg: 60,
+    fee: 18000,
+    description: "Untuk kombinasi beberapa komoditas dengan perlindungan box."
+  },
+  {
+    id: "pickup",
+    title: "Mobil Pickup",
+    capacityKg: 300,
+    fee: 45000,
+    description: "Untuk pesanan pasar, warung, atau pembelian stok lebih besar."
+  },
+  {
+    id: "truk-ringan",
+    title: "Truk Ringan",
+    capacityKg: 1000,
+    fee: 95000,
+    description: "Untuk pengiriman komoditas skala besar dan banyak karung."
+  }
+];
+
+function estimateItemWeight(item) {
+  const unit = String(item.product.unit || "kg").toLowerCase();
+  const unitWeight = unitWeightKg[unit] || 1;
+  return Number(item.quantity || 0) * unitWeight;
+}
+
+function formatWeight(weight) {
+  const value = Number(weight) || 0;
+  if (value < 1) return `${formatNumber(Math.round(value * 1000))} gram`;
+  return `${formatNumber(Math.round(value * 10) / 10)} kg`;
+}
+
+function getRecommendedCourier(weight) {
+  return (
+    courierOptions.find((courier) => courier.capacityKg >= weight) ||
+    courierOptions[courierOptions.length - 1]
+  );
+}
 
 function PaymentMethodIcon({ type }) {
   if (type === "transfer-bank") {
@@ -59,6 +116,42 @@ function PaymentMethodIcon({ type }) {
   );
 }
 
+function CourierIcon({ type }) {
+  if (type === "motor") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M5 16h3" />
+        <path d="M15 16h4" />
+        <path d="M8 16l3-7h4l2 7" />
+        <path d="M7 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+        <path d="M18 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+      </svg>
+    );
+  }
+
+  if (type === "motor-box") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 15h4" />
+        <path d="M15 15h5" />
+        <path d="M8 15l3-6h4l2 6" />
+        <path d="M12 5h6v5h-6z" />
+        <path d="M7 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+        <path d="M18 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 7h11v9H3z" />
+      <path d="M14 10h4l3 3v3h-7z" />
+      <path d="M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+      <path d="M18 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+    </svg>
+  );
+}
+
 export function PaymentPage({ user, cart, products, onCheckout, navigate }) {
   const deliveryProfile = user?.deliveryProfile || {};
   const [receiver, setReceiver] = useState(deliveryProfile.receiverName || user?.name || "");
@@ -66,6 +159,7 @@ export function PaymentPage({ user, cart, products, onCheckout, navigate }) {
   const [address, setAddress] = useState(deliveryProfile.address || "");
   const [note, setNote] = useState("");
   const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].id);
+  const [courierId, setCourierId] = useState(courierOptions[0].id);
   const [error, setError] = useState("");
   const [paymentResult, setPaymentResult] = useState(null);
 
@@ -81,9 +175,22 @@ export function PaymentPage({ user, cart, products, onCheckout, navigate }) {
   );
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
+  const estimatedWeightKg = cartItems.reduce((sum, item) => sum + estimateItemWeight(item), 0);
+  const recommendedCourier = getRecommendedCourier(estimatedWeightKg);
+  const selectedCourier =
+    courierOptions.find((courier) => courier.id === courierId) || recommendedCourier;
   const serviceFee = cartItems.length ? 2500 : 0;
-  const total = subtotal + serviceFee;
+  const deliveryFee = cartItems.length ? selectedCourier.fee : 0;
+  const total = subtotal + serviceFee + deliveryFee;
   const selectedMethod = paymentMethods.find((method) => method.id === paymentMethod);
+  const maxCourierCapacity = courierOptions[courierOptions.length - 1].capacityKg;
+
+  useEffect(() => {
+    if (!cartItems.length) return;
+    if (selectedCourier.capacityKg < estimatedWeightKg) {
+      setCourierId(recommendedCourier.id);
+    }
+  }, [cartItems.length, estimatedWeightKg, recommendedCourier.id, selectedCourier.capacityKg]);
 
   const handlePay = (event) => {
     event.preventDefault();
@@ -93,7 +200,34 @@ export function PaymentPage({ user, cart, products, onCheckout, navigate }) {
       return;
     }
 
-    const result = onCheckout();
+    if (estimatedWeightKg > maxCourierCapacity) {
+      setError("Muatan pesanan melebihi kapasitas kurir yang tersedia. Kurangi jumlah pesanan terlebih dahulu.");
+      return;
+    }
+
+    if (selectedCourier.capacityKg < estimatedWeightKg) {
+      setError("Pilih tipe kurir dengan kapasitas yang mencukupi untuk pesanan ini.");
+      return;
+    }
+
+    const result = onCheckout({
+      delivery: {
+        courierId: selectedCourier.id,
+        courierName: selectedCourier.title,
+        courierCapacityKg: selectedCourier.capacityKg,
+        deliveryFee,
+        estimatedWeightKg,
+        receiver,
+        phone,
+        address,
+        note
+      },
+      payment: {
+        method: selectedMethod.title,
+        serviceFee,
+        paidTotal: total
+      }
+    });
     if (!result.ok) {
       setError(result.message);
       return;
@@ -107,6 +241,10 @@ export function PaymentPage({ user, cart, products, onCheckout, navigate }) {
       phone,
       address,
       note,
+      courier: selectedCourier.title,
+      courierCapacityKg: selectedCourier.capacityKg,
+      deliveryFee,
+      estimatedWeightKg,
       paidTotal: total
     });
   };
@@ -144,6 +282,14 @@ export function PaymentPage({ user, cart, products, onCheckout, navigate }) {
             <div>
               <span>Metode pembayaran</span>
               <strong>{paymentResult.method}</strong>
+            </div>
+            <div>
+              <span>Kurir pengiriman</span>
+              <strong>{paymentResult.courier}</strong>
+            </div>
+            <div>
+              <span>Estimasi muatan</span>
+              <strong>{formatWeight(paymentResult.estimatedWeightKg)}</strong>
             </div>
             <div>
               <span>Total pembayaran</span>
@@ -228,6 +374,81 @@ export function PaymentPage({ user, cart, products, onCheckout, navigate }) {
         <section className="payment-panel">
           <div className="panel-heading">
             <div>
+              <p className="eyebrow">Kurir pengiriman</p>
+              <h2>Pilih tipe armada</h2>
+            </div>
+          </div>
+
+          <div className="courier-insight">
+            <div>
+              <span>Estimasi muatan</span>
+              <strong>{formatWeight(estimatedWeightKg)}</strong>
+            </div>
+            <div>
+              <span>Rekomendasi</span>
+              <strong>{recommendedCourier.title}</strong>
+            </div>
+          </div>
+
+          <p className="courier-rule">
+            Armada di bawah kapasitas muatan otomatis tidak tersedia. Anda tetap bisa memilih
+            armada dengan kapasitas lebih besar.
+          </p>
+
+          <div className="courier-load-list">
+            {cartItems.map((item) => (
+              <div key={item.productId}>
+                <span>
+                  {item.product.name} - {formatNumber(item.quantity)} {item.product.unit}
+                </span>
+                <strong>{formatWeight(estimateItemWeight(item))}</strong>
+              </div>
+            ))}
+          </div>
+
+          <small className="courier-unit-note">
+            Konversi muatan: 1 kg = 1 kg, 1 karung = 25 kg, 1 ikat = 0,35 kg, 1 buah = 0,25 kg.
+          </small>
+
+          <div className="payment-methods courier-methods">
+            {courierOptions.map((courier) => {
+              const isDisabled = courier.capacityKg < estimatedWeightKg;
+
+              return (
+                <label
+                  className={`payment-method courier-method cursor-target ${
+                    courierId === courier.id ? "is-selected" : ""
+                  } ${isDisabled ? "is-disabled" : ""}`}
+                  key={courier.id}
+                >
+                  <span className="payment-method-icon">
+                    <CourierIcon type={courier.id} />
+                  </span>
+                  <span className="payment-method-copy">
+                    <strong>{courier.title}</strong>
+                    <small>{courier.description}</small>
+                    <small>
+                      Kapasitas hingga {formatWeight(courier.capacityKg)} - {formatRupiah(courier.fee)}
+                    </small>
+                  </span>
+                  <input
+                    type="radio"
+                    name="courierType"
+                    value={courier.id}
+                    checked={courierId === courier.id}
+                    disabled={isDisabled}
+                    onChange={(event) => setCourierId(event.target.value)}
+                    aria-label={courier.title}
+                  />
+                </label>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="payment-panel">
+          <div className="panel-heading">
+            <div>
               <p className="eyebrow">Metode pembayaran</p>
               <h2>Pilih cara bayar</h2>
             </div>
@@ -287,6 +508,10 @@ export function PaymentPage({ user, cart, products, onCheckout, navigate }) {
             <div>
               <span>Biaya layanan</span>
               <strong>{formatRupiah(serviceFee)}</strong>
+            </div>
+            <div>
+              <span>Kurir {selectedCourier.title}</span>
+              <strong>{formatRupiah(deliveryFee)}</strong>
             </div>
             <div className="payment-grand-total">
               <span>Total bayar</span>

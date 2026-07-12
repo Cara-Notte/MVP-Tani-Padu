@@ -2,8 +2,7 @@
 
 MVP aplikasi web berbahasa Indonesia untuk pasar pangan Rajeg, dashboard produsen, dan monitoring pangan pemerintah.
 
-## Menjalankan Proyek
-
+## Menjalankan Proyek Secara Lokal
 ```bash
 npm install
 npm run dev
