@@ -2,6 +2,8 @@
 
 MVP aplikasi web berbahasa Indonesia untuk pasar pangan Rajeg, dashboard produsen, dan monitoring pangan pemerintah.
 
+Akses: https://cara-notte.github.io/MVP-Tani-Padu/
+
 ## Menjalankan Proyek Secara Lokal
 ```bash
 npm install
