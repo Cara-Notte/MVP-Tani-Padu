@@ -11,7 +11,7 @@ export const mockProducts = [
     stock: 420,
     description:
       "Beras lokal Rajeg dengan kualitas pulen untuk kebutuhan rumah tangga dan warung makan.",
-    imageUrl: "/assets/products/beras-rajeg.png",
+    imageUrl: "./assets/products/beras-rajeg.png",
     imageTone: "beras"
   },
   {
@@ -26,7 +26,7 @@ export const mockProducts = [
     stock: 86,
     description:
       "Cabai merah segar hasil panen harian dengan tingkat pedas yang cocok untuk kebutuhan pasar.",
-    imageUrl: "/assets/products/cabai-merah.png",
+    imageUrl: "./assets/products/cabai-merah.png",
     imageTone: "cabai"
   },
   {
@@ -41,7 +41,7 @@ export const mockProducts = [
     stock: 155,
     description:
       "Tomat segar untuk masakan rumah, usaha kuliner, dan kebutuhan harian.",
-    imageUrl: "/assets/products/tomat.png",
+    imageUrl: "./assets/products/tomat.png",
     imageTone: "tomat"
   },
   {
@@ -56,7 +56,7 @@ export const mockProducts = [
     stock: 210,
     description:
       "Bayam hijau segar yang dipanen pagi hari dan siap dikirim ke konsumen.",
-    imageUrl: "/assets/products/bayam.png",
+    imageUrl: "./assets/products/bayam.png",
     imageTone: "bayam"
   },
   {
@@ -71,7 +71,7 @@ export const mockProducts = [
     stock: 340,
     description:
       "Jagung manis dan jagung pipil untuk kebutuhan rumah tangga maupun usaha pangan.",
-    imageUrl: "/assets/products/jagung.png",
+    imageUrl: "./assets/products/jagung.png",
     imageTone: "jagung"
   },
   {
@@ -86,7 +86,7 @@ export const mockProducts = [
     stock: 64,
     description:
       "Bawang merah pilihan dengan ukuran merata dan aroma kuat untuk kebutuhan dapur.",
-    imageUrl: "/assets/products/bawang-merah.png",
+    imageUrl: "./assets/products/bawang-merah.png",
     imageTone: "bawang"
   }
 ];
