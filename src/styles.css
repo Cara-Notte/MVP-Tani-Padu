@@ -288,7 +288,7 @@ th {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url("/assets/petani-ladang-hero.png");
+  background-image: url("./assets/petani-ladang-hero.png");
   background-size: cover;
   background-position: center;
   opacity: 0.32;
