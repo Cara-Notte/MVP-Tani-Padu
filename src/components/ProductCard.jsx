@@ -14,6 +14,16 @@ function stockLabel(stock) {
 }
 
 export function ProductCard({ product, onDetail, onAddToCart }) {
+  const computeImageSrc = (url) => {
+    if (!url) return null;
+    // If the url is absolute-root (starts with '/assets/'), prefix current pathname (repo subpath)
+    if (typeof window !== 'undefined' && typeof url === 'string' && url.startsWith('/')) {
+      const base = window.location.pathname.replace(/\/$/, '');
+      return `${base}${url}`;
+    }
+    return url;
+  };
+
   return (
     <article className="product-card">
       <div
@@ -21,7 +31,7 @@ export function ProductCard({ product, onDetail, onAddToCart }) {
         role="img"
         aria-label={product.imageUrl ? `Foto ${product.name}` : `Ilustrasi ${product.name}`}
       >
-        {product.imageUrl ? <img src={product.imageUrl} alt={product.name} /> : null}
+        {product.imageUrl ? <img src={computeImageSrc(product.imageUrl)} alt={product.name} /> : null}
         <span>{product.category}</span>
       </div>
       <div className="product-body">
