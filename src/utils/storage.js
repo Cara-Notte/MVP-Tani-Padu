@@ -171,7 +171,19 @@ export function saveCurrentUser(user) {
 }
 
 export function getProducts() {
-  return readStorage(STORAGE_KEYS.products, mockProducts);
+  const products = readStorage(STORAGE_KEYS.products, mockProducts);
+  try {
+    return (products || []).map((p) => {
+      if (!p || !p.imageUrl) return p;
+      // normalize leading slash to relative path so GitHub Pages serves correctly
+      if (typeof p.imageUrl === "string" && p.imageUrl.startsWith("/assets/")) {
+        return { ...p, imageUrl: `.${p.imageUrl}` };
+      }
+      return p;
+    });
+  } catch {
+    return products;
+  }
 }
 
 export function setProducts(products) {
