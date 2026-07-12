@@ -8,7 +8,28 @@
       content="Tani Padu membantu petani Rajeg menjual hasil panen langsung kepada konsumen dan mendukung monitoring pangan."
     />
     <title>Tani Padu</title>
-    <script type="module" crossorigin src="./assets/index-DEi1NhmI.js"></script>
+      <script>
+        // Normalize legacy product image paths stored in localStorage
+        try {
+          const key = "tanipadu_products";
+          const raw = window.localStorage.getItem(key);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              const normalized = parsed.map((p) => {
+                if (p && typeof p.imageUrl === "string" && p.imageUrl.startsWith("/assets/")) {
+                  return { ...p, imageUrl: `.${p.imageUrl}` };
+                }
+                return p;
+              });
+              window.localStorage.setItem(key, JSON.stringify(normalized));
+            }
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      </script>
+      <script type="module" crossorigin src="./assets/index-DEi1NhmI.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-gu21R2a7.css">
   </head>
   <body>
